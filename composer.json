@@ -1,0 +1,14 @@
+{
+    "name": "hemantanshu/laravel-worker",
+    "description": "Custom management of laravel workers",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Hemant Kumar Sah",
+            "email": "hemantanshu@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {}
+}
