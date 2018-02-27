@@ -3,6 +3,9 @@
   "description": "Custom management of laravel workers",
   "type": "library",
   "license": "MIT",
+  "keywords": [
+    "laravel"
+  ],
   "authors": [
     {
       "name": "Hemant Kumar Sah",
@@ -11,5 +14,10 @@
   ],
   "minimum-stability": "stable",
   "require": {
+  },
+  "autoload": {
+    "psr-4": {
+      "Hemantanshu\\LaravelWorker\\": "src/"
+    }
   }
 }
