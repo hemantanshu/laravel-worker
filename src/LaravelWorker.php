@@ -12,6 +12,11 @@ use Hemantanshu\LaravelWorker\Models\WorkerServer;
 class LaravelWorker {
 
     /**
+     * @var null
+     */
+    private static $hostname = null;
+
+    /**
      * Check if worker can process message on the given server
      * And also log the process against this worker
      * @return bool|mixed
@@ -41,12 +46,29 @@ class LaravelWorker {
     }
 
     /**
+     * Check for active processes on the server and mark all inactive process
+     * logged 
+     */
+    public static function invalidateInactiveProcesses () {
+        $activePIDs = self::loadActiveProcesses();
+        $workers = WorkerProcess::active()->where('server_hostname', self::getSystemActiveIdentifier())->get();
+
+        foreach ( $workers as $worker ) {
+            if ( in_array($worker->pid, $activePIDs) )
+                continue;
+
+            $worker->active = false;
+            $worker->save();
+        }
+    }
+
+    /**
      * Get the active server
      * @return bool
      */
     private static function getServerDetails () {
         $server = WorkerServer::firstOrCreate([
-            'server_hostname' => gethostname(),
+            'server_hostname' => self::getSystemActiveIdentifier(),
         ]);
 
         if ( isset($server->active) && !$server->active )
@@ -59,12 +81,51 @@ class LaravelWorker {
      * Get the current active process being executed by the worker
      * @return mixed
      */
-    public static function logProcess () {
+    private static function logProcess () {
         $process = WorkerProcess::firstOrCreate([
-            'server_hostname' => gethostname(),
+            'server_hostname' => self::getSystemActiveIdentifier(),
             'pid'             => getmypid(),
         ]);
 
         return $process;
+    }
+
+    /**
+     * @return null|string
+     */
+    private static function getSystemActiveIdentifier () {
+        if ( !self::$hostname ) {
+            $machineId = trim(shell_exec('cat /etc/machine-id 2>/dev/null'));
+            self::$hostname = $machineId . '-' . gethostname();
+        }
+
+        return self::$hostname;
+    }
+
+    /**
+     * Get the processes that are active in the system and run through php
+     * @return array
+     */
+    private static function loadActiveProcesses () {
+        $processes = shell_exec('ps -e | grep php');
+        $activeProcesses = [];
+        foreach ( preg_split("/((\r?\n)|(\r\n?))/", $processes) as $process ) {
+            array_push($activeProcesses, self::extractPID($process));
+        }
+
+        return $activeProcesses;
+    }
+
+    /**
+     * Get the pid no from the extract
+     * @param $process
+     * @return mixed
+     */
+    private static function extractPID ($process) {
+        $processIds = explode(' ', $process);
+        foreach ( $processIds as $pid ) {
+            if ( $pid && is_numeric($pid) )
+                return $pid;
+        }
     }
 }
