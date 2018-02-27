@@ -47,7 +47,7 @@ class LaravelWorker {
 
     /**
      * Check for active processes on the server and mark all inactive process
-     * logged 
+     * logged
      */
     public static function invalidateInactiveProcesses () {
         $activePIDs = self::loadActiveProcesses();
