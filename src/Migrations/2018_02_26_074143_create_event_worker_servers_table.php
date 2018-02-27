@@ -16,8 +16,11 @@ class CreateEventWorkerServersTable extends Migration {
 
             $table->string('server_hostname')->unique();
             $table->boolean('active')->default(true);
+            $table->integer('maximum_processes')->default(0);
 
             $table->timestamps();
+
+            $table->index('server_hostname');
         });
     }
 

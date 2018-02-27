@@ -16,8 +16,15 @@ class CreateEventWorkerProcessesTable extends Migration {
 
             $table->string('server_hostname');
             $table->integer('pid');
-            $table->string('job_name');
+
+            $table->string('job_name')->nullable();
+
+            $table->unsignedInteger('processed')->default(0);
+            $table->boolean('active')->default(true);
+
             $table->timestamps();
+
+            $table->index(['server_hostname', 'pid']);
         });
     }
 
