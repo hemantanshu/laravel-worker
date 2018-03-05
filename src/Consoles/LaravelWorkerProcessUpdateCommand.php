@@ -11,7 +11,7 @@ class LaravelWorkerProcessUpdateCommand extends Command {
      *
      * @var string
      */
-    protected $signature = 'event:update';
+    protected $signature = 'queue:process-update';
 
     /**
      * The console command description.
