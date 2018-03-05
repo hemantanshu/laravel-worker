@@ -2,6 +2,7 @@
 
 namespace Hemantanshu\LaravelWorker;
 
+use Hemantanshu\LaravelWorker\Consoles\LaravelWorkerProcessUpdateCommand;
 use Illuminate\Support\ServiceProvider;
 
 class LaravelWorkerServiceProvider extends ServiceProvider {
@@ -22,6 +23,7 @@ class LaravelWorkerServiceProvider extends ServiceProvider {
      * @return void
      */
     public function register () {
+        $this->commands([LaravelWorkerProcessUpdateCommand::class]);
         $this->app->bind('laravelWorker', LaravelWorker::class);
     }
 }
